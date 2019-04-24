@@ -39,10 +39,36 @@ private:
 	void asignaNodo(enlace, string);
 	int averiguaTipo(int, int);
 
-	
-
 public:
 	Simple_window * win;
+	bool step;
+	vector<NodoGUI*>nodos;
+	void salir();
+	Fl_Input *cuadro;
+	Procesar();
+	void iniciar(void*, void*, void*, void*);
+	void tokenizar(string);
+	vector<string> demInstrucciones(string);
+	void clasificarInstrucciones();
+	int genereAleatorio();
+	string demeChar(Token);
+	int calcularSiguientes(vector<Token>, int);
+	string demeStr(vector<Token>, int);
+	void limpiarHeap();
+	int demeArco(int, bool);
+
+	//Funciones de Instrucciones
+	void hagaHeapback(int);
+	void imprimaError();
+	void repita(int, string);
+	void referenciaCampo(string, int);
+	void asignarValor(string, int, int);
+	void referenciaPuntero(string, int);
+	void asignaPuntero(string, int, string, int);
+	void eliminarReferencia(string, int);
+	void referenciaCampo_referenciaCampo(string, int, string, int);
+	void crearNodo(string, int, int);
+	void hagaMientras(string, int, string);
 	~Procesar();
 };
 
