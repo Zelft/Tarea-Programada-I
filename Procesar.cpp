@@ -505,3 +505,453 @@ string Procesar::demeStr(vector<Token> instruccion, int index)
 	}
 	return tiraInstrucciones;
 }
+
+//Funciones de Instrucciones
+void Procesar::hagaHeapback(int x)
+{
+	cout << "Haciendo Heapback: " << x << " veces.\n\n";
+	for (int i = 0; i < x; i++) {
+
+	}
+	salida->replace(0, 1000, "");
+	string out = to_string(x);
+	const char* pOutput = (char*)out.c_str();
+	salida->insert(pOutput);
+}
+
+void Procesar::imprimaError()
+{
+	cout << "Error\n";
+	salida->replace(0, 100, "", 0);
+	this->salida->insert(" Error!");
+}
+
+void Procesar::repita(int condicion, string tira)
+{
+	cout << "\t** Repitiendo**\n";
+	cout << "Repitiendo " << condicion << " las instrucciones: " << tira << "\n\n";
+	for (int i = 0; i < condicion; i++)
+	{
+		leerInput(tira);
+		instrucciones.pop_back();
+		clasificarInstrucciones();
+	}
+	salida->replace(0, 100, "", 0);
+	string out = to_string(condicion);
+	const char* pOutput = (char*)out.c_str();
+	salida->insert(pOutput);
+}
+
+void Procesar::referenciaCampo(string variable, int cantSig)
+{
+	cout << "\t** Haciendo una Referencia a Campo**\n";
+	cout << "Imprimiendo la variable " << variable << " con cant sig = " << cantSig << "\n\n";
+	enlace p = demeNodo(variable);
+	if (p) {
+		while (cantSig != 0) {
+			if (p->siguiente) {
+				p = p->siguiente;
+				cantSig--;
+			}
+			else
+			{
+				return imprimaError();
+			}
+
+		}
+		salida->replace(0, 100, "", 0);
+		cout << "Imprimiendo el p->v: " << p->v;
+		string out = to_string(p->v);
+		const char* pOutput = (char*)out.c_str();
+		salida->insert(pOutput);
+	}
+	else {
+		imprimaError();
+	}
+}
+
+void Procesar::asignarValor(string variable, int cantSig, int valor)
+{
+	cout << "\t** Asignando un Valor**\n";
+	cout << "Asignando " << valor << " a la variable " << variable << " con cant sig = " << cantSig << "\n\n";
+	enlace p = demeNodo(variable);
+	enlace copyp = p;
+	if (p) {
+		while (cantSig != 0) {
+			if (p->siguiente) {
+				p = p->siguiente;
+				cantSig--;
+			}
+			else
+			{
+				return imprimaError();
+			}
+
+		}
+		salida->replace(0, 100, "", 0);
+		p->v = valor;
+		int idx = p->indice;
+		nodos[idx]->setValor(valor);
+		win->redraw();
+		asignaNodo(copyp, variable);
+		cout << "Ok \n\n";
+		salida->insert("Ok");
+	}
+	else {
+		imprimaError();
+	}
+}
+
+void Procesar::referenciaPuntero(string variable, int cantSig) {
+	cout << "\t** ReferenciaPuntero **\n";
+	cout << "Referenciando Puntero " << variable << " con cantidad de veces: " << cantSig << "\n\n";
+	enlace p = demeNodo(variable);
+	if (!p) return imprimaError();
+	while (cantSig > 0) {
+		if (p->siguiente) {
+			p = p->siguiente;
+			cantSig--;
+		}
+		else {
+			return imprimaError();
+		}
+	}
+	cout << "\nLa direccion es: " << &p << " y se encuentra en la celda " << p->indice << endl;
+	string out = to_string(&p);
+	const char* pOutput = (char*)out.c_str();
+	salida->replace(0, 100, "", 0);
+	salida->insert(pOutput);
+}
+
+void Procesar::asignaPuntero(string var1, int sig1, string var2, int sig2)
+{
+	cout << "\t** Asigna Puntero **\n";
+	cout << "Asignando a la variable " << var1 << " con " << sig1 << " siguientes , la variable " << var2 << " con " << sig2 << " siguientes" << "\n\n";
+	enlace p = demeNodo(var1);
+	enlace q = demeNodo(var2);
+	enlace copyP = p;
+	cout << "Imprimiendo " << copyP->v;
+	if (p && q) {
+		int indViejo;
+		int indActual;
+		while (sig2 != 0) {
+			if (q->siguiente) {
+				q = q->siguiente;
+				sig2--;
+			}
+			else
+			{
+				return imprimaError();
+			}
+		}
+		indActual = q->indice;
+		if (sig1 == 0) {
+			salida->replace(0, 100, "", 0);
+			indViejo = p->indice;
+			indActual = q->indice;
+			p = q;
+			referencias[indViejo]->eliminaLetra(*var1.c_str());
+			referencias[indActual]->agregarLetra(var1);
+			win->attach(*referencias[indActual]);
+			win->attach(*referencias[indViejo]);
+			win->redraw();
+			asignaNodo(q, var1);
+			salida->insert(" Ok");
+			cout << "Ok";
+		}
+		else {
+			while (sig1 != 1) {
+				if (p->siguiente) {
+					p = p->siguiente;
+					sig1--;
+				}
+				else
+				{
+					return imprimaError();
+				}
+			}
+			indViejo = p->indice;
+			salida->replace(0, 100, "", 0);
+			int indOrigen = p->indice;
+			int indDestino = q->indice;
+			int tipoArco = averiguaTipo(indOrigen, indDestino);
+			p->siguiente = q;
+			//referencias[indViejo]->eliminaLetra(*var1.c_str());
+			//referencias[indActual]->agregarLetra(var1);
+			if (arcos[indOrigen]->getOrigen().x != 0) {
+				win->detach(*arcos[indOrigen]);
+				win->redraw();
+			}
+			arcos[indOrigen] = new Arco(indOrigen, indDestino, celdas[indOrigen]->getPos(), celdas[indDestino]->getPos(), tipoArco);;
+			win->attach(*arcos[indOrigen]);
+			//win->attach(*referencias[indActual]);
+			//win->attach(*referencias[indViejo]);
+			win->redraw();
+			asignaNodo(copyP, var1);
+			salida->insert(" Ok");
+			cout << "Ok";
+		}
+	}
+	else {
+		cout << "FML";
+		imprimaError();
+	}
+
+}
+
+void Procesar::eliminarReferencia(string var, int cantSig)
+{
+	cout << "\t** Elimina referencia **\n";
+	cout << "Eliminando la variable " << var << " con " << cantSig << " siguientes" << "\n\n";
+	enlace p = demeNodo(var);
+	enlace copyP = p;
+
+	if (!p) {
+		return imprimaError();
+	}
+	if (cantSig == 0) {
+		int idx = p->indice;
+		delete p;
+		copyP = NULL;
+		asignaNodo(NULL, var);
+		nodos[idx]->activo = false;
+		win->detach(*nodos[idx]);
+		//referencias[idx]->eliminaLetra(*var.c_str());
+		referencias[idx]->set_label("");
+		win->redraw();
+		salida->replace(0, 100, "Ok", 0);
+		cout << "Nodo eliminado\n";
+		int indiceArco = demeArco(idx, false);
+		if (indiceArco != -1) {
+			win->detach(*arcos[indiceArco]);
+			arcos[indiceArco] = new Arco(-1, -1, Point{ 0,0 }, Point{ 0,0, }, 0);
+			win->redraw();
+		}
+	}
+	else {
+		while (cantSig != 1) {
+			if (p->siguiente) {
+				p = p->siguiente;
+				cantSig--;
+			}
+			else
+			{
+				return imprimaError();
+			}
+		}
+		int idx = p->siguiente->indice;
+		int indiceArco = demeArco(idx, true);
+		if (indiceArco != -1) {
+			win->detach(*arcos[indiceArco]);
+			arcos[indiceArco] = new Arco(-1, -1, Point{ 0,0 }, Point{ 0,0, }, 0);
+			win->redraw();
+		}
+		indiceArco = demeArco(idx, false);
+		if (indiceArco != -1) {
+			win->detach(*arcos[indiceArco]);
+			arcos[indiceArco] = new Arco(-1, -1, Point{ 0,0 }, Point{ 0,0, }, 0);
+			win->redraw();
+		}
+		delete p->siguiente;
+		p->siguiente = nullptr;
+		asignaNodo(p, var);
+		nodos[idx]->activo = false;
+		referencias[idx]->set_label("");
+		win->detach(*nodos[idx]);
+		win->redraw();
+		cout << "Nodo eliminado\n";
+		salida->replace(0, 100, "", 0);
+		salida->insert(" Ok");
+	}
+
+}
+
+void Procesar::referenciaCampo_referenciaCampo(string var1, int cantSig, string var2, int cantSig2)
+{
+	cout << "\t** Referencia Campo = Referencia Campo**\n";
+	cout << "Asignando a la variable " << var1 << " con cantidad siguiente " << cantSig
+		<< " la variable " << var2 << " con cant siguientes " << cantSig2 << "\n\n";
+	enlace p = demeNodo(var1);
+	enlace q = demeNodo(var2);
+	enlace copyP = p;
+	if (p && q) {
+		while (cantSig2 != 0) {
+			if (q->siguiente) {
+				q = q->siguiente;
+				cantSig2--;
+			}
+			else
+			{
+				return imprimaError();
+			}
+		}
+		while (cantSig != 0) {
+			if (p->siguiente) {
+				p = p->siguiente;
+				cantSig--;
+			}
+			else
+			{
+				return imprimaError();
+			}
+
+		}
+		salida->replace(0, 100, "", 0);
+		p->v = q->v;
+		int idx = p->indice;
+		nodos[idx]->setValor(q->v);
+		win->redraw();
+		asignaNodo(copyP, var1);
+		salida->insert(" Ok");
+		cout << "Ok";
+	}
+	else {
+		imprimaError();
+	}
+}
+
+void Procesar::crearNodo(string var, int cantSig, int x)
+{
+	cout << "\t** Creando Nuevo Nodo**\n";
+	cout << "Creando un nuevo nodo con el valor " << x << " en la variable " << var << " con la cantidad de siguientes " << cantSig << "\n\n";
+	if (x < 0 || x>99) {
+		return imprimaError();
+	}
+	bool full = true;
+	for (int i = 0; i < nodos.size(); i++) {
+		if (!nodos[i]->activo) full = false;
+	}
+	if (full) {
+		cout << "Overflow\n";
+		salida->replace(0, 100, "", 0);
+		salida->insert("Overflow");
+		return;
+	}
+	enlace p = demeNodo(var);
+	enlace copyP = p;
+	enlace q = new Nodo(x);
+	if (cantSig == 0 && !p) {
+		asignaNodo(q, var);
+		for (int i = 0; i < nodos.size(); i++) {
+			if (!nodos[i]->activo) {
+				nodos[i]->activo = true;
+				nodos[i]->setValor(x);
+				q->indice = i;
+				referencias[i]->agregarLetra(var);
+				win->attach(*referencias[i]);
+				win->attach(*nodos[i]);
+				win->redraw();
+				i = nodos.size();
+				cout << "Nodo creado\n";
+				salida->replace(0, 100, "", 0);
+				salida->insert("Ok");
+			}
+		}
+	}
+	else if (cantSig != 0 && p)
+	{
+		while (cantSig != 1) {
+			if (p->siguiente) {
+				p = p->siguiente;
+				cantSig--;
+			}
+			else
+			{
+				return imprimaError();
+			}
+		}
+		for (int i = 0; i < nodos.size(); i++) {
+			if (!nodos[i]->activo) {
+				nodos[i]->activo = true;
+				nodos[i]->setValor(x);
+				win->attach(*nodos[i]);
+				win->redraw();
+				q->indice = i;
+				cout << "Nodo creado\n";
+				salida->replace(0, 100, "", 0);
+				salida->insert(" Ok");
+				i = nodos.size();
+			}
+		}
+		int indOrigen = p->indice;
+		int indDestino = q->indice;
+		int tipoArco = averiguaTipo(indOrigen, indDestino);
+		p->siguiente = q;
+		//referencias[indViejo]->eliminaLetra(*var1.c_str());
+		//referencias[indActual]->agregarLetra(var1);
+		if (arcos[indOrigen]->getOrigen().x != 0) {
+			win->detach(*arcos[indOrigen]);
+			win->redraw();
+		}
+		arcos[indOrigen] = new Arco(indOrigen, indDestino, celdas[indOrigen]->getPos(), celdas[indDestino]->getPos(), tipoArco);;
+		win->attach(*arcos[indOrigen]);
+
+		p->siguiente = q;
+		asignaNodo(copyP, var);
+	}
+	else if (cantSig == 0 && p)
+	{
+		cout << "entra";
+		int indicePasado = p->indice;
+		referencias[indicePasado]->eliminaLetra(*var.c_str());
+		win->attach(*referencias[indicePasado]);
+		win->redraw();
+		for (int i = 0; i < nodos.size(); i++) {
+			if (!nodos[i]->activo) {
+				nodos[i]->activo = true;
+				nodos[i]->setValor(x);
+				q->indice = i;
+				win->attach(*nodos[i]);
+				referencias[i]->agregarLetra(var);
+				win->attach(*referencias[i]);
+				win->redraw();
+				i = nodos.size();
+			}
+		}
+		asignaNodo(q, var);
+		cout << "Nodo creado\n";
+		salida->replace(0, 100, "", 0);
+		salida->insert(" Ok");
+		cout << "Imprimiendo p->indice " << p->indice;
+	}
+	else
+	{
+		imprimaError();
+	}
+}
+
+void Procesar::hagaMientras(string var, int cantSig, string tira)
+{
+	cout << "\t** Haciento un While**\n";
+	cout << "Mientras la variable " << var << " con cantidad de siguientes " << cantSig << " haciendo la tira : " << tira;
+	enlace p = demeNodo(var);
+	if (!p) return imprimaError();
+	while (cantSig != 1) {
+		if (p->siguiente) {
+			p = p->siguiente;
+			cantSig--;
+		}
+		else
+		{
+			return imprimaError();
+		}
+	}
+	int iteraciones = 0;
+	while (p) {
+		leerInput(tira);
+		instrucciones.pop_back();
+		clasificarInstrucciones();
+	}
+	cout << "Ok, mientras realizado: " << iteraciones << "veces";
+	salida->replace(0, 100, "", 0);
+	string out = to_string(iteraciones);
+	const char* pOutput = (char*)out.c_str();
+	salida->insert(pOutput);
+
+}
+
+Procesar::~Procesar()
+{
+	delete win;
+}
+
