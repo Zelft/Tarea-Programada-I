@@ -24,3 +24,4 @@ struct Token {
 	friend ostream& operator<<(ostream &os, Token & t);
 	~Token() {};
 };
+

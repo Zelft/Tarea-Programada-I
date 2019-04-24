@@ -1,3 +1,4 @@
+//#include "pch.h"
 #include "Token.h"
 
 Token::Token(Tipo k)
@@ -13,31 +14,31 @@ Tipo Token::demeTipo()
 
 Token::Token(string st)
 {
-	tipo = nulo;
+	tipo = nulo; 
 	tokenS = st;
 }
 
 Token::Token(string st, Tipo k)
 {
-	tipo = k;
+	tipo = k; 
 	tokenS = st;
 }
 
 Token::Token(int st, Tipo k)
 {
-	tipo = k;
+	tipo = k; 
 	num = st;
 }
 
 Token::Token(char s, Tipo k)
 {
-	tipo = k;
+	tipo = k; 
 	tokenC = s;
 }
 
 Token::Token(int n)
 {
-	tipo = numero;
+	tipo = numero; 
 	num = n;
 }
 

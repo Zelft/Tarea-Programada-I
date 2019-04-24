@@ -12,7 +12,6 @@ using std::cout;
 using namespace std::this_thread; // sleep_for, sleep_until
 using namespace std::chrono; // nanoseconds, system_clock, seconds
 
-
 void Procesar::cargarHeap()
 {
 	fl_color(Color::dark_blue);
@@ -35,7 +34,7 @@ void Procesar::cargarHeap()
 		referencias.push_back(var);
 		NodoGUI *nodo = new NodoGUI(xy, i + 1);
 		nodos.push_back(nodo);
-		Arco *arco = new Arco(-1, -1, Point(0, 0), Point(1, 1), 0);
+		Arco *arco = new Arco(-1,-1, Point(0, 0), Point(1, 1), 0);
 		arcos.push_back(arco);
 		fl_line_style(Line_style::dash, 2);
 		x += 145;
@@ -66,7 +65,7 @@ int Procesar::averiguaTipo(int origen, int destino)
 		//Caso 3
 		return 3;
 	}
-	else if (cOrigen->getPos().y == cDestino->getPos().y)
+	else if(cOrigen->getPos().y == cDestino->getPos().y)
 	{
 		//Casos 1 y 2
 		bool intermedio = false;
@@ -93,7 +92,7 @@ Procesar::Procesar()
 {
 	//Creando variables para Nodos
 	char vars[]{ 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s'
-	,'t','u','v','w','x','y','z' };
+	,'t','u','v','w','x','y','z'};
 	for (int i = 0; i < 26; i++) {
 		variables[i] = letra(to_string(vars[i]), 0);;
 	}
@@ -157,7 +156,7 @@ void Procesar::tokenizar(string s)
 {
 	//Tokeniza la entrada
 	instrucciones = {};
-	strInstrucciones = demInstrucciones(s);
+	strInstrucciones = demInstrucciones(s);	
 	for (int i = 0; i < strInstrucciones.size(); i++) {
 		Tokenizador tt{ strInstrucciones[i] };
 		Token t = tt.demeToken();
@@ -192,7 +191,7 @@ void Procesar::clasificarInstrucciones()
 {
 	for (int i = 0; i < instrucciones.size(); i++) {//Indexamos instrucciones
 		Fl::wait();
-		if (step && i < instrucciones.size()) { win->espera(); }
+		if (step && i < instrucciones.size()) {win->espera();}
 		bool entra = false;
 		vector<Token> instruccion = instrucciones[i]; //vector con 1 instruccion
 		//Instruccion Vacia Error
@@ -309,7 +308,7 @@ void Procesar::clasificarInstrucciones()
 						entra = true;
 					}
 
-					if (instruccion.size() > j + 2 && instruccion[j + 1].demeTipo() == operador &&
+					if (instruccion.size()> j+2 && instruccion[j + 1].demeTipo() == operador &&
 						(instruccion[j + 2].demeTipo() == numero || instruccion[j + 2].demeTipo() == aleatorio)) {
 						//Evalua Referencia a Campo = Valor
 						int numero = 0;
@@ -376,7 +375,7 @@ void Procesar::clasificarInstrucciones()
 				}
 
 				//Eliminar referencia Instruccion 3
-				if (!entra && instruccion.size() > j + 1 && instruccion[j].demeTipo() == operador && instruccion[j + 1].demeTipo() == numero && instruccion[j + 1].num == 0) {
+				if (!entra && instruccion.size()>j+1 && instruccion[j].demeTipo() == operador && instruccion[j + 1].demeTipo() == numero && instruccion[j + 1].num == 0) {
 					if (cantSig % 2 == 0) {
 						cantSig = cantSig / 2;
 						eliminarReferencia(instruccion[0].tokenS, cantSig);
@@ -421,7 +420,7 @@ void Procesar::limpiarHeap()
 	win->redraw();
 }
 
-int Procesar::demeArco(int idx, bool destino)
+int Procesar::demeArco(int idx,bool destino)
 {
 	if (destino) {
 		for (int i = 0; i < arcos.size(); i++) {
@@ -506,13 +505,16 @@ string Procesar::demeStr(vector<Token> instruccion, int index)
 	return tiraInstrucciones;
 }
 
+
+
+
 //Funciones de Instrucciones
 void Procesar::hagaHeapback(int x)
 {
 	cout << "Haciendo Heapback: " << x << " veces.\n\n";
-	for (int i = 0; i < x; i++) {
+	
 
-	}
+	//Inserta el output
 	salida->replace(0, 1000, "");
 	string out = to_string(x);
 	const char* pOutput = (char*)out.c_str();
@@ -529,10 +531,10 @@ void Procesar::imprimaError()
 void Procesar::repita(int condicion, string tira)
 {
 	cout << "\t** Repitiendo**\n";
-	cout << "Repitiendo " << condicion << " las instrucciones: " << tira << "\n\n";
+	cout << "Repitiendo " << condicion << " las instrucciones: " << tira<<"\n\n";
 	for (int i = 0; i < condicion; i++)
 	{
-		leerInput(tira);
+		tokenizar(tira);
 		instrucciones.pop_back();
 		clasificarInstrucciones();
 	}
@@ -559,10 +561,10 @@ void Procesar::referenciaCampo(string variable, int cantSig)
 			}
 
 		}
-		salida->replace(0, 100, "", 0);
+		salida->replace(0,100,"",0);
 		cout << "Imprimiendo el p->v: " << p->v;
 		string out = to_string(p->v);
-		const char* pOutput = (char*)out.c_str();
+		const char* pOutput = (char*) out.c_str();
 		salida->insert(pOutput);
 	}
 	else {
@@ -573,7 +575,7 @@ void Procesar::referenciaCampo(string variable, int cantSig)
 void Procesar::asignarValor(string variable, int cantSig, int valor)
 {
 	cout << "\t** Asignando un Valor**\n";
-	cout << "Asignando " << valor << " a la variable " << variable << " con cant sig = " << cantSig << "\n\n";
+	cout << "Asignando "<<valor<<" a la variable "<<variable<<" con cant sig = "<< cantSig << "\n\n";
 	enlace p = demeNodo(variable);
 	enlace copyp = p;
 	if (p) {
@@ -588,12 +590,12 @@ void Procesar::asignarValor(string variable, int cantSig, int valor)
 			}
 
 		}
-		salida->replace(0, 100, "", 0);
+		salida->replace(0,100,"",0);
 		p->v = valor;
 		int idx = p->indice;
 		nodos[idx]->setValor(valor);
 		win->redraw();
-		asignaNodo(copyp, variable);
+		asignaNodo(copyp,variable);
 		cout << "Ok \n\n";
 		salida->insert("Ok");
 	}
@@ -604,7 +606,7 @@ void Procesar::asignarValor(string variable, int cantSig, int valor)
 
 void Procesar::referenciaPuntero(string variable, int cantSig) {
 	cout << "\t** ReferenciaPuntero **\n";
-	cout << "Referenciando Puntero " << variable << " con cantidad de veces: " << cantSig << "\n\n";
+	cout << "Referenciando Puntero " <<variable  << " con cantidad de veces: " << cantSig << "\n\n";
 	enlace p = demeNodo(variable);
 	if (!p) return imprimaError();
 	while (cantSig > 0) {
@@ -616,7 +618,7 @@ void Procesar::referenciaPuntero(string variable, int cantSig) {
 			return imprimaError();
 		}
 	}
-	cout << "\nLa direccion es: " << &p << " y se encuentra en la celda " << p->indice << endl;
+	cout << "\nLa direccion es: " << &p<<" y se encuentra en la celda "<<p->indice<<endl;
 	string out = to_string(&p);
 	const char* pOutput = (char*)out.c_str();
 	salida->replace(0, 100, "", 0);
@@ -630,7 +632,7 @@ void Procesar::asignaPuntero(string var1, int sig1, string var2, int sig2)
 	enlace p = demeNodo(var1);
 	enlace q = demeNodo(var2);
 	enlace copyP = p;
-	cout << "Imprimiendo " << copyP->v;
+	cout << "Imprimiendo "<<copyP->v;
 	if (p && q) {
 		int indViejo;
 		int indActual;
@@ -682,7 +684,7 @@ void Procesar::asignaPuntero(string var1, int sig1, string var2, int sig2)
 				win->detach(*arcos[indOrigen]);
 				win->redraw();
 			}
-			arcos[indOrigen] = new Arco(indOrigen, indDestino, celdas[indOrigen]->getPos(), celdas[indDestino]->getPos(), tipoArco);;
+			arcos[indOrigen] = new Arco(indOrigen,indDestino,celdas[indOrigen]->getPos(),celdas[indDestino]->getPos(),tipoArco);;
 			win->attach(*arcos[indOrigen]);
 			//win->attach(*referencias[indActual]);
 			//win->attach(*referencias[indViejo]);
@@ -696,7 +698,7 @@ void Procesar::asignaPuntero(string var1, int sig1, string var2, int sig2)
 		cout << "FML";
 		imprimaError();
 	}
-
+	
 }
 
 void Procesar::eliminarReferencia(string var, int cantSig)
@@ -740,7 +742,7 @@ void Procesar::eliminarReferencia(string var, int cantSig)
 			}
 		}
 		int idx = p->siguiente->indice;
-		int indiceArco = demeArco(idx, true);
+		int indiceArco = demeArco(idx,true);
 		if (indiceArco != -1) {
 			win->detach(*arcos[indiceArco]);
 			arcos[indiceArco] = new Arco(-1, -1, Point{ 0,0 }, Point{ 0,0, }, 0);
@@ -756,7 +758,7 @@ void Procesar::eliminarReferencia(string var, int cantSig)
 		p->siguiente = nullptr;
 		asignaNodo(p, var);
 		nodos[idx]->activo = false;
-		referencias[idx]->set_label("");
+		referencias[idx]->set_label("");		
 		win->detach(*nodos[idx]);
 		win->redraw();
 		cout << "Nodo eliminado\n";
@@ -766,11 +768,11 @@ void Procesar::eliminarReferencia(string var, int cantSig)
 
 }
 
-void Procesar::referenciaCampo_referenciaCampo(string var1, int cantSig, string var2, int cantSig2)
+void Procesar::referenciaCampo_referenciaCampo(string var1, int cantSig, string var2 , int cantSig2)
 {
 	cout << "\t** Referencia Campo = Referencia Campo**\n";
-	cout << "Asignando a la variable " << var1 << " con cantidad siguiente " << cantSig
-		<< " la variable " << var2 << " con cant siguientes " << cantSig2 << "\n\n";
+	cout << "Asignando a la variable " << var1  << " con cantidad siguiente "<<cantSig 
+		<<" la variable "<< var2 << " con cant siguientes " << cantSig2 << "\n\n";
 	enlace p = demeNodo(var1);
 	enlace q = demeNodo(var2);
 	enlace copyP = p;
@@ -797,7 +799,7 @@ void Procesar::referenciaCampo_referenciaCampo(string var1, int cantSig, string 
 
 		}
 		salida->replace(0, 100, "", 0);
-		p->v = q->v;
+		p->v=q->v;
 		int idx = p->indice;
 		nodos[idx]->setValor(q->v);
 		win->redraw();
@@ -848,7 +850,7 @@ void Procesar::crearNodo(string var, int cantSig, int x)
 			}
 		}
 	}
-	else if (cantSig != 0 && p)
+	else if(cantSig != 0 && p)
 	{
 		while (cantSig != 1) {
 			if (p->siguiente) {
@@ -883,7 +885,7 @@ void Procesar::crearNodo(string var, int cantSig, int x)
 			win->detach(*arcos[indOrigen]);
 			win->redraw();
 		}
-		arcos[indOrigen] = new Arco(indOrigen, indDestino, celdas[indOrigen]->getPos(), celdas[indDestino]->getPos(), tipoArco);;
+		arcos[indOrigen] = new Arco(indOrigen,indDestino,celdas[indOrigen]->getPos(), celdas[indDestino]->getPos(), tipoArco);;
 		win->attach(*arcos[indOrigen]);
 
 		p->siguiente = q;
@@ -938,7 +940,7 @@ void Procesar::hagaMientras(string var, int cantSig, string tira)
 	}
 	int iteraciones = 0;
 	while (p) {
-		leerInput(tira);
+		tokenizar(tira);
 		instrucciones.pop_back();
 		clasificarInstrucciones();
 	}
@@ -952,6 +954,24 @@ void Procesar::hagaMientras(string var, int cantSig, string tira)
 
 Procesar::~Procesar()
 {
-	delete win;
+	Celda *c;
+	Text *l{};
+	Text *r{};
+	Arco *a{};
+	NodoGUI *n{};
+	for (int i = 0; i < 26;i++) {
+		c = celdas[i];
+		delete c;
+		l = labels[i];
+		delete l;
+		r = referencias[i];
+		delete r;
+		a = arcos[i];
+		delete a;
+		n = nodos[i];
+
+	}
+	delete in,cuadro,salida;
+	delete boton1, boton2, boton3, boton4;
 }
 

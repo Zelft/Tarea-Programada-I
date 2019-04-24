@@ -1,3 +1,4 @@
+//#include "pch.h"
 #include "Tokenizador.h"
 
 
@@ -45,7 +46,7 @@ Token Tokenizador::demeToken() {
 		else if (s == "heapback" || s == "Heapback") {
 			return Token(s, heapback);
 		}
-		else if (s.length() == 1) {
+		else if(s.length()==1){
 			return Token(s, variable);
 		}
 		return Token(s, nulo);

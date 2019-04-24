@@ -17,10 +17,9 @@ struct letra {
 	letra(string p) : variable{ p }, p{ NULL }{};
 };
 
-class Procesar :public Tokenizador {
+class Procesar:public Tokenizador{
 private:
 	In_box * in;
-	Simple_window * win;
 	Fl_Button *boton1;
 	Fl_Button *boton2;
 	Fl_Button *boton3;
@@ -38,6 +37,7 @@ private:
 	enlace demeNodo(string);
 	void asignaNodo(enlace, string);
 	int averiguaTipo(int, int);
+	
 
 public:
 	Simple_window * win;
@@ -52,18 +52,18 @@ public:
 	void clasificarInstrucciones();
 	int genereAleatorio();
 	string demeChar(Token);
-	int calcularSiguientes(vector<Token>, int);
+	int calcularSiguientes(vector<Token>,int);
 	string demeStr(vector<Token>, int);
 	void limpiarHeap();
-	int demeArco(int, bool);
+	int demeArco(int ,bool);
 
 	//Funciones de Instrucciones
 	void hagaHeapback(int);
 	void imprimaError();
 	void repita(int, string);
 	void referenciaCampo(string, int);
-	void asignarValor(string, int, int);
-	void referenciaPuntero(string, int);
+	void asignarValor(string, int,int);
+	void referenciaPuntero(string , int );
 	void asignaPuntero(string, int, string, int);
 	void eliminarReferencia(string, int);
 	void referenciaCampo_referenciaCampo(string, int, string, int);
